@@ -18,6 +18,7 @@ if ( set -o noclobber; echo "$$" > "$STARTUP_LOCK" ) 2>/dev/null; then
 fi
 
 cycle=0
+prev_effect=""
 
 effects=(
   beams binarypath blackhole bouncyballs bubbles burn colorshift crumble
@@ -50,13 +51,20 @@ hyprctl keyword cursor:invisible true &>/dev/null
 
 while true; do
   # First monitor to write wins; second reads the agreed effect
-  candidate="${effects[$RANDOM % ${#effects[@]}]}"
+  if [[ -n "$prev_effect" ]]; then
+    filtered=()
+    for e in "${effects[@]}"; do [[ "$e" != "$prev_effect" ]] && filtered+=("$e"); done
+    candidate="${filtered[$RANDOM % ${#filtered[@]}]}"
+  else
+    candidate="${effects[$RANDOM % ${#effects[@]}]}"
+  fi
   if ( set -o noclobber; echo "$candidate" > "${EFFECT_FILE}-${cycle}" ) 2>/dev/null; then
     effect="$candidate"
   else
     while [[ ! -f "${EFFECT_FILE}-${cycle}" ]]; do sleep 0.01; done
     effect=$(cat "${EFFECT_FILE}-${cycle}")
   fi
+  prev_effect="$effect"
 
   tte -i ~/.config/omarchy/branding/screensaver.txt \
     --frame-rate 120 --canvas-width 0 --canvas-height 0 --reuse-canvas --anchor-canvas c --anchor-text c \
