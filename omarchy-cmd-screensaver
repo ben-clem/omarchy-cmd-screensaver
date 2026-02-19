@@ -49,6 +49,9 @@ printf '\033]11;rgb:00/00/00\007'  # Set background color to black
 
 hyprctl keyword cursor:invisible true &>/dev/null
 
+monitor_count=$(hyprctl monitors -j 2>/dev/null | jq -r 'length' 2>/dev/null)
+[[ -z "$monitor_count" || "$monitor_count" -lt 1 ]] && monitor_count=1
+
 while true; do
   # First monitor to write wins; second reads the agreed effect
   if [[ -n "$prev_effect" ]]; then
@@ -80,7 +83,7 @@ while true; do
 
   # Signal this monitor is done and wait for all monitors before starting next effect
   touch "$BARRIER_DIR/done-${tty_id}-${cycle}"
-  while [[ $(ls "$BARRIER_DIR"/done-*-"${cycle}" 2>/dev/null | wc -l) -lt 2 ]]; do
+  while [[ $(ls "$BARRIER_DIR"/done-*-"${cycle}" 2>/dev/null | wc -l) -lt "$monitor_count" ]]; do
     sleep 0.01
   done
   cycle=$(( cycle + 1 ))
