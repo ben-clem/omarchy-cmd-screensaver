@@ -21,7 +21,7 @@ cycle=0
 prev_effect=""
 
 effects=(
-  beams binarypath blackhole bouncyballs bubbles burn colorshift crumble
+  binarypath blackhole bouncyballs bubbles burn colorshift crumble
   decrypt errorcorrect expand fireworks highlight laseretch middleout
   orbittingvolley overflow pour print rain randomsequence rings scattered
   slice slide spotlights spray swarm sweep synthgrid thunderstorm
